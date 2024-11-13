@@ -1,0 +1,45 @@
+name: UCX Installation Pipeline
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  DATABRICKS_HOST: ${{secrets.DATABRICKS_HOST}}
+  DATABRICKS_CLIENT_ID: ${{secrets.DATABRICKS_CLIENT_ID}}
+  DATABRICKS_CLIENT_SECRET: ${{secrets.DATABRICKS_CLIENT_SECRET}}
+
+jobs:
+  install_ucx:
+    name: Databricks Unit testing
+    runs-on: ubuntu-latest
+
+    environment: databricks
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Expect 
+        run: sudo apt-get install expect
+
+      - name: Setup databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Set execute permissions
+        run: chmod +x script.exp
+
+      - name: Install UCX
+        id: install
+        run:  expect ./install_ucx.exp
+        continue-on-error: true
+
+      - name: Terraform Plan Status
+        if: steps.install.outcome == 'failure'
+        run: exit 1
+
+      - name: Success
+        if: steps.install.outcome == 'success'
+        run: echo "UCX Installed"
+
+    
