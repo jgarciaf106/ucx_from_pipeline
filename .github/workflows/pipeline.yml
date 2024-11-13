@@ -11,7 +11,7 @@ env:
 
 jobs:
   install_ucx:
-    name: Databricks Unit testing
+    name: UCX Installation
     runs-on: ubuntu-latest
 
     environment: databricks
@@ -27,7 +27,7 @@ jobs:
         uses: databricks/setup-cli@main
 
       - name: Set execute permissions
-        run: chmod +x script.exp
+        run: chmod +x install_ucx.exp
 
       - name: Install UCX
         id: install
